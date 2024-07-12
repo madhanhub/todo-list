@@ -15,6 +15,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 const User=require('./Schema/Todo_User')
 const Task=require('./Schema/Todo_task')
 
+const user_controller=require('./Controllers/usercontroller')
+
 app.listen(9876,()=>{
     console.log('server run');
 
@@ -39,10 +41,10 @@ app.post('/user',async(req,res)=>{
         if(existing_user){
            return res.status(400).json({message:'user already exist'})
         }
-        const User_register=new User({
+        const user_register=await user_controller.User_register(
             user_name,password
-        }).save()
-        res.status(200).json({message:'user register successfully',data:User_register})
+        )
+        res.status(200).json({message:'user register successfully',data:user_register})
     }catch(error){
         res.status(500).json({message:'user registration failed'})
     }
@@ -50,9 +52,10 @@ app.post('/user',async(req,res)=>{
 
 app.post('/sign/up',async(req,res)=>{
     try{
-        var signUp=await User.findOne({
-            user_name:req.body.user_name,
-            password:req.body.password
+        const {user_name,password}=req.body
+        var signUp=await user_controller.User_signip({
+            user_name,
+            password
         })
         res.status(200).json({message:'signup successfully',data:signUp})
     }catch(error){
