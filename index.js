@@ -109,12 +109,14 @@ app.post('/task/complete',async(req,res)=>{
 
 app.post('/task/update',async(req,res)=>{
     try{
+        const{_id,label,describtion,task_completion_date}=req.body
         const task_update=await Task.findOneAndUpdate({_id,'task.label':label},
         {$set:{
             'task.$.label':label,
             'task.$.describtion':describtion,
             'task.$.task_complete_date':task_completion_date,
-        }})
+        }},
+        {new:true})
         res.status(200).json({message:'Task Updated',data:task_update})
     }catch(error){
         res.status(500).json({message:'updation failed'})
