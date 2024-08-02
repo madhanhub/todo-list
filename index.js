@@ -12,9 +12,11 @@ app.use(bodyparser.json())
 app.use(express.urlencoded({extended:true}))
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 const User=require('./Schema/Todo_User')
 const Task=require('./Schema/Todo_task')
 
+const user_task_controller=require('./Controllers/TaskController')
 const user_controller=require('./Controllers/usercontroller')
 
 app.listen(9876,()=>{
@@ -65,7 +67,8 @@ app.post('/sign/up',async(req,res)=>{
 
 app.post('/user/delete',async(req,res)=>{
     try{
-        const user_delete=await User.findOneAndDelete({_id:req.body._id})
+        const {_id}=req.body
+        const user_delete=await user_controller.User_delete({_id})
         res.status(200).json({message:'deleted successfully',data:user_delete})
     }catch(error){
         res.status(500).json({message:'delete failed'})
@@ -74,10 +77,10 @@ app.post('/user/delete',async(req,res)=>{
 
 app.post('/Task',async(req,res)=>{
     try{
-        const{u_id,lable,describtion}=req.body
-        const task=new Task({
-            u_id,lable,describtion
-        }).save()
+        const{u_id}=req.body
+        const task=await user_task_controller.User_Task(
+            u_id
+        )
         res.status(200).json({message:'Task ToDo',data:task})
     }catch(error){
         res.status(500).json({message:'Task not placed'})
@@ -125,3 +128,4 @@ app.post('/task/update',async(req,res)=>{
         res.status(500).json({message:'updation failed'})
     }
 })
+

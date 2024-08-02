@@ -17,5 +17,13 @@ class UserController{
     })
     return signup
 }
+    static async User_delete(
+        {_id}
+    ){
+        const u_delete=await User.findOneAndDelete({
+            _id
+        })
+        return u_delete
+    }
 }
 module.exports=UserController
