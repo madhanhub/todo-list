@@ -2,10 +2,10 @@ const User=require('../Schema/Todo_User')
 const validation=require('../validation')
 class UserController{
     static async User_register(
-        user_name,password
+        user_name,password,email,mobile_no
     ){
         const user_register=await new User({
-            user_name,password
+            user_name,password,email,mobile_no
         }).save()
         return user_register
     }
