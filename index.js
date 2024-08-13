@@ -57,6 +57,7 @@ app.post('/user/sign_in',async(req,res)=>{
         const user_signin=await User.findOne({
             email:req.body.email,password:req.body.password
         })
+        console.log(user_signin)
         res.status(200).json({message:'success',data:user_signin})
     }catch(error){
         res.status(500).json({message:'failed'})
