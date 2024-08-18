@@ -57,9 +57,9 @@ app.post('/user/sign_in',async(req,res)=>{
             const user=await User.findOne({email,password})
             if(user){
                 {
-                    var token=await jsonwebtoken.sign({id:user._id,user_name:user.user_name},process.env.SECRET)
+                    var token=await jsonwebtoken.sign({id:user.id,user_name:user.user_name},process.env.SECRET)
                     res.setHeader('token',token)
-                    res.setHeader('id',user._id)
+                    res.setHeader('id',user.id)
                     res.setHeader('user_name',user.user_name)
                     res.status(200).json({message:'success',data:token})        
                 }
@@ -72,20 +72,25 @@ app.post('/user/sign_in',async(req,res)=>{
 
 })
 
-
-app.post('/task',async(req,res)=>{
+app.post('/task',authorization,async(req,res)=>{
     try{
-        const task=new Task({u_id:req.body.u_id})
+        const id=req.body.id
+        const{label,describtion,task_complete_date}=req.body
+        const task=await User.findOneAndUpdate({id},
+            {$push:{task:{
+                label,describtion,task_complete_date
+            }}})
         res.status(200).json({message:'success',data:task})
     }catch(error){
         res.status(500).json({message:'failed'})
     }
 })
 
-app.post('/task/new',async(req,res)=>{
+app.post('/task/new',authorization,async(req,res)=>{
     try{
         const{_id,label,describtion,task_complete_date}=req.body
-        const new_task=await Task.findOneAndUpdate({_id},
+        const u_id=req.body
+        const new_task=await Task.findOneAndUpdate({_id,u_id},
             {$push:{task:{
                 label,describtion,task_complete_date
             }}})
