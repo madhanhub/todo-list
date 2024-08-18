@@ -3,21 +3,21 @@ const app=express()
 const mongoose=require('mongoose')
 const morgan=require('morgan')
 const http=require('http')
-const cors=require('cors')
+const dotenv=require('dotenv').config()
+const jsonwebtoken=require('jsonwebtoken')
 const bodyparser=require('body-parser')
-
-
-
-app.use(express.json())
-app.use(morgan('dev'))
-app.use(cors())
-app.use(bodyparser.json())
-app.use(express.urlencoded({extended:true}))
-
-
 
 const User=require('./Schema/Todo_User')
 const Task=require('./Schema/Todo_task')
+
+const authorization=require('./function/auth')
+const cors=require('./function/cors')
+
+app.use(express.json())
+app.use(morgan('dev'))
+app.use(cors)
+app.use(bodyparser.json())
+app.use(express.urlencoded({extended:true}))
 
 const user_task_controller=require('./Controllers/TaskController')
 const user_controller=require('./Controllers/usercontroller')
@@ -52,13 +52,56 @@ app.post('/user',async(req,res)=>{
 })
 
 app.post('/user/sign_in',async(req,res)=>{
+        try{
+            const{email,password}=req.body
+            const user=await User.findOne({email,password})
+            if(user){
+                {
+                    var token=await jsonwebtoken.sign({id:user._id,user_name:user.user_name},process.env.SECRET)
+                    res.setHeader('token',token)
+                    res.setHeader('id',user._id)
+                    res.setHeader('user_name',user.user_name)
+                    res.status(200).json({message:'success',data:token})        
+                }
+            }
+            console.log(user);
+            
+        }catch(error){
+            res.status(500).json({message:'failed'})
+        }
 
+})
+
+
+app.post('/task',async(req,res)=>{
     try{
-        const user_signin=await User.findOne({
-            email:req.body.email,password:req.body.password
-        })
-        console.log(user_signin)
-        res.status(200).json({message:'success',data:user_signin})
+        const task=new Task({u_id:req.body.u_id})
+        res.status(200).json({message:'success',data:task})
+    }catch(error){
+        res.status(500).json({message:'failed'})
+    }
+})
+
+app.post('/task/new',async(req,res)=>{
+    try{
+        const{_id,label,describtion,task_complete_date}=req.body
+        const new_task=await Task.findOneAndUpdate({_id},
+            {$push:{task:{
+                label,describtion,task_complete_date
+            }}})
+            res.status(200).json({message:'success',data:new_task})
+    }catch(error){
+        res.status(500).json({message:'failed'})
+    }
+})
+app.post('/task/delete',async(req,res)=>{
+    try{
+        const{ _id,label,describtion,task_complete_date}=req.body
+        const task_delete=await Task.findOneAndUpdate({_id,label},
+            {$pull:{task:{
+                label,describtion,task_complete_date
+            }}})
+            res.status(200).json({message:'success',data:task_delete})
     }catch(error){
         res.status(500).json({message:'failed'})
     }
