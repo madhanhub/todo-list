@@ -74,38 +74,34 @@ app.post('/user/sign_in',async(req,res)=>{
 
 app.post('/task',authorization,async(req,res)=>{
     try{
-        const id=req.body.id
-        const{label,describtion,task_complete_date}=req.body
-        const task=await User.findOneAndUpdate({id},
-            {$push:{task:{
-                label,describtion,task_complete_date
-            }}})
+        const{label,describtion,start_date,end_date}=req.body
+        uid=req.id
+        const task=new Task({uid,label,describtion,start_date,end_date}).save()
         res.status(200).json({message:'success',data:task})
     }catch(error){
         res.status(500).json({message:'failed'})
     }
 })
 
-app.post('/task/new',authorization,async(req,res)=>{
+app.post('/task/update',authorization,async(req,res)=>{
     try{
-        const{_id,label,describtion,task_complete_date}=req.body
-        const u_id=req.body
-        const new_task=await Task.findOneAndUpdate({_id,u_id},
-            {$push:{task:{
-                label,describtion,task_complete_date
-            }}})
-            res.status(200).json({message:'success',data:new_task})
+        const{label,describtion,start_date,end_date}=req.body
+        uid=req.id
+        const task_update=await Task.findOneAndUpdate({uid,label},
+            {$set:{
+                label,describtion,start_date,end_date
+            }})
+            res.status(200).json({message:'success',data:task_update})
     }catch(error){
         res.status(500).json({message:'failed'})
     }
 })
-app.post('/task/delete',async(req,res)=>{
+
+app.post('/task/delete',authorization,async(req,res)=>{
     try{
-        const{ _id,label,describtion,task_complete_date}=req.body
-        const task_delete=await Task.findOneAndUpdate({_id,label},
-            {$pull:{task:{
-                label,describtion,task_complete_date
-            }}})
+        
+        uid=req.id
+        const task_delete=await Task.findOneAndDelete({uid})
             res.status(200).json({message:'success',data:task_delete})
     }catch(error){
         res.status(500).json({message:'failed'})

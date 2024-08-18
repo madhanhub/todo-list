@@ -29,17 +29,17 @@ const user=  mongoose.Schema({
         //   message: 'Invalid mobile.',
         // },
     },
-    task:[{
-        label:{type:String},
-        describtion:{type:String},
-        task_completion_date:{type:Date},
-        create_date:{
-            type:Date,
-            default:Date.now},
-        iscomplete:{
-            type:String,
-            default:'pending'
-        }
-    }]
+    // task:[{
+    //     label:{type:String},
+    //     describtion:{type:String},
+    //     task_completion_date:{type:Date},
+    //     create_date:{
+    //         type:Date,
+    //         default:Date.now},
+    //     iscomplete:{
+    //         type:String,
+    //         default:'pending'
+    //     }
+    // }]
 })
 module.exports=mongoose.model('Todo_User',user)
