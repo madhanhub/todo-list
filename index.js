@@ -6,13 +6,10 @@ const http=require('http')
 const dotenv=require('dotenv').config()
 const jsonwebtoken=require('jsonwebtoken')
 const bodyparser=require('body-parser')
-
 const User=require('./Schema/Todo_User')
 const Task=require('./Schema/Todo_task')
-
 const authorization=require('./function/auth')
 const cors=require('./function/cors')
-
 app.use(express.json())
 app.use(morgan('dev'))
 app.use(cors)
@@ -97,8 +94,8 @@ app.post('/task/update',authorization,async(req,res)=>{
     }
 })
 
-app.post('/task/delete',authorization,async(req,res)=>{
-    try{
+app.post('/task/delete',authorization,async(req,res)=>{ 
+    try{    
         
         uid=req.id
         const task_delete=await Task.findOneAndDelete({uid})
