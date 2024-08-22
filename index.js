@@ -79,7 +79,7 @@ app.post('/user/sign_in',async(req,res)=>{
 
 })
 
-app.post('/task',async(req,res)=>{
+app.post('/Task',async(req,res)=>{
     try{
         const{label,describtion,start_date,end_date}=req.body
         uid=req.id
