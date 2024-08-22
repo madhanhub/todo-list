@@ -45,7 +45,7 @@ app.post('/user',async(req,res)=>{
         const{user_name,password,mobile_no,email}=req.body
         const existing_user=await User.findOne({email})
         if(existing_user){
-                res.status(409).json({message:'user already exist'})
+               return res.status(409).json({message:'user already exist'})
         }
         const user_reg=new User({
             user_name,password,mobile_no,email
@@ -79,7 +79,7 @@ app.post('/user/sign_in',async(req,res)=>{
 
 })
 
-app.post('/task',authorization,async(req,res)=>{
+app.post('/task',async(req,res)=>{
     try{
         const{label,describtion,start_date,end_date}=req.body
         uid=req.id
