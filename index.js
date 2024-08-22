@@ -6,10 +6,14 @@ const http=require('http')
 const dotenv=require('dotenv').config()
 const jsonwebtoken=require('jsonwebtoken')
 const bodyparser=require('body-parser')
+
 const User=require('./Schema/Todo_User')
 const Task=require('./Schema/Todo_task')
+
 const authorization=require('./function/auth')
 const cors=require('./function/cors')
+
+
 app.use(express.json())
 app.use(morgan('dev'))
 app.use(cors)
@@ -39,6 +43,10 @@ app.get('/',async(req,res)=>{
 app.post('/user',async(req,res)=>{
     try{
         const{user_name,password,mobile_no,email}=req.body
+        const existing_user=await User.findOne({email})
+        if(existing_user){
+                res.status(409).json({message:'user already exist'})
+        }
         const user_reg=new User({
             user_name,password,mobile_no,email
         }).save()
@@ -52,16 +60,18 @@ app.post('/user/sign_in',async(req,res)=>{
         try{
             const{email,password}=req.body
             const user=await User.findOne({email,password})
+            
             if(user){
                 {
                     var token=await jsonwebtoken.sign({id:user.id,user_name:user.user_name},process.env.SECRET)
                     res.setHeader('token',token)
                     res.setHeader('id',user.id)
                     res.setHeader('user_name',user.user_name)
-                    res.status(200).json({message:'success',data:token})        
+                    res.status(200).json({message:'success',data:token})   
+                    console.log(token);
+                        
                 }
             }
-            console.log(user);
             
         }catch(error){
             res.status(500).json({message:'failed'})
