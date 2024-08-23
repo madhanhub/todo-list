@@ -21,7 +21,7 @@ app.use(bodyparser.json())
 app.use(express.urlencoded({extended:true}))
 
 const user_task_controller=require('./Controllers/TaskController')
-const user_controller=require('./Controllers/usercontroller')
+const User_Controller=require('./Controllers/usercontroller')
 
 app.listen(9876,()=>{
     console.log('server run');
@@ -42,24 +42,24 @@ app.get('/',async(req,res)=>{
 
 app.post('/user',async(req,res)=>{
     try{
-        const{user_name,password,mobile_no,email}=req.body
+        const {user_name,password,email,mobile_no}=req.body
         const existing_user=await User.findOne({email})
         if(existing_user){
-               return res.status(409).json({message:'user already exist'})
+           return res.status(409).json({message:'user already exist'})
         }
-        const user_reg=new User({
-            user_name,password,mobile_no,email
-        }).save()
-        res.status(200).json({message:'success',data:user_reg})
+        const user_reg=await User_Controller.User_Register({
+            user_name,password,email,mobile_no
+    })
+        res.status(200).json({message:'user register successfully',data:user_reg})  
     }catch(error){
-        res.status(500).json({message:'user registration failed'})
+        res.status(500).json({message:'register failed'})
     }
 })
 
 app.post('/user/sign_in',async(req,res)=>{
         try{
             const{email,password}=req.body
-            const user=await User.findOne({email,password})
+            const user=await User_Controller.User_signin({email,password})
             
             if(user){
                 {
@@ -90,7 +90,7 @@ app.post('/Task',async(req,res)=>{
     }
 })
 
-app.post('/task/update',authorization,async(req,res)=>{
+app.post('/task/update',async(req,res)=>{
     try{
         const{label,describtion,start_date,end_date}=req.body
         uid=req.id
