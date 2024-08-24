@@ -79,7 +79,7 @@ app.post('/user/sign_in',async(req,res)=>{
 
 })
 
-app.post('/Task',async(req,res)=>{
+app.post('/Task',authorization,async(req,res)=>{
     try{
         const{label,describtion,start_date,end_date}=req.body
         uid=req.id
@@ -90,7 +90,7 @@ app.post('/Task',async(req,res)=>{
     }
 })
 
-app.post('/task/update',async(req,res)=>{
+app.post('/task/update',authorization,async(req,res)=>{
     try{
         const{label,describtion,start_date,end_date}=req.body
         uid=req.id
@@ -107,8 +107,8 @@ app.post('/task/update',async(req,res)=>{
 app.post('/task/delete',authorization,async(req,res)=>{ 
     try{    
         
-        uid=req.id
-        const task_delete=await Task.findOneAndDelete({uid})
+        const{label,describtion,start_date,end_date}=req.body
+        const task_delete=await Task.findOneAndDelete({label,describtion,start_date,end_date})
             res.status(200).json({message:'success',data:task_delete})
     }catch(error){
         res.status(500).json({message:'failed'})
