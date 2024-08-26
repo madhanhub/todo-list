@@ -37,7 +37,7 @@ app.listen(9876,()=>{
 })
 
 app.get('/',async(req,res)=>{
-    res.send('ok')
+    res.send('welcome')
 })
 
 app.post('/user',async(req,res)=>{
@@ -115,4 +115,12 @@ app.post('/task/delete',authorization,async(req,res)=>{
     }
 })
 
-
+app.get('/task/get',authorization,async(req,res)=>{
+    try{
+        _id=req.id
+        const task_get=await User.findOne({_id})
+        res.status(200).json({message:'data Featch',data:task_get})
+    }catch(error){
+        res.status(500).json({message:'Task not Featch'})
+    }
+})
